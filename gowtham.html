@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Resort</title>
+<link rel="stylesheet" href="vardhan.css">
+</head>
+
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+  <h2>🌴 My Resort</h2>
+  <div>
+    <a href="#">Home</a>
+    <a href="#rooms">Rooms</a>
+    <a href="#contact">Contact</a>
+    <a href="https://maps.google.com" target="_blank">📍 Location</a>
+  </div>
+</div>
+
+<!-- Hero Section (Resort Image) -->
+<div class="hero">
+  <h1>Welcome to Paradise</h1>
+  <p>Enjoy luxury and comfort</p>
+</div>
+
+<!-- Rooms Section -->
+<h2 id="rooms">Our Rooms (3 Rooms Available)</h2>
+
+<div class="rooms">
+
+  <div class="room-card" onclick="showDetails('Room 101 - ₹2000/night ⭐4.5')">
+    <img src="https://picsum.photos/200/150?room1">
+    <p>Room 101</p>
+  </div>
+
+  <div class="room-card" onclick="showDetails('Room 102 - ₹2500/night ⭐4.7')">
+    <img src="https://picsum.photos/200/150?room2">
+    <p>Room 102</p>
+  </div>
+
+  <div class="room-card" onclick="showDetails('Room 103 - ₹3000/night ⭐4.9')">
+    <img src="https://picsum.photos/200/150?room3">
+    <p>Room 103</p>
+  </div>
+
+</div>
+
+<!-- Contact Section -->
+<div id="contact">
+  <h1>Contact Us</h1>
+
+  <input id="name" placeholder="Enter your name">
+  <input id="phone" placeholder="Enter your phone number">
+
+  <button onclick="submitForm()">Submit</button>
+
+  <p>📞 Phone: 9666404040</p>
+  <p>📧 Email: gowtham@gmail.com</p>
+</div>
+<script src="harsha.js"></script>
+</body>
+</html>
