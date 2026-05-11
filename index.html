@@ -1,0 +1,2894 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizMaster Pro - Ultimate Online Quiz Challenge</title>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* CSS Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            background: linear-gradient(-45deg, #021B79, #0575E6, #20BDFF, #00d2ff);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            background: linear-gradient(-45deg, #000428, #004e92, #000428, #0f2027);
+            color: #ffffff;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #021B79, #20BDFF);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease;
+        }
+
+        .loading-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes glow {
+            from {
+                filter: drop-shadow(0 0 10px #fff);
+            }
+
+            to {
+                filter: drop-shadow(0 0 30px #fff);
+            }
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(45deg, #fff, #00d2ff);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        .mode-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .mode-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle fill="url(%23a)" cx="200" cy="200" r="100"/><circle fill="url(%23a)" cx="800" cy="300" r="80"/><circle fill="url(%23a)" cx="400" cy="700" r="120"/></svg>');
+            animation: float 20s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            33% {
+                transform: translateY(-30px) rotate(120deg);
+            }
+
+            66% {
+                transform: translateY(20px) rotate(240deg);
+            }
+        }
+
+        .hero-content {
+            z-index: 2;
+            max-width: 800px;
+            padding: 0 2rem;
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 4.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #fff, #00d2ff, #0575E6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .typing-subtitle {
+            font-size: 1.8rem;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 3rem;
+            min-height: 60px;
+            border-right: 3px solid #fff;
+            animation: blink 1s infinite;
+            font-weight: 500;
+        }
+
+        @keyframes blink {
+
+            0%,
+            50% {
+                border-color: #fff;
+            }
+
+            51%,
+            100% {
+                border-color: transparent;
+            }
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1.2rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #0052d4, #4364f7, #6fb1fc);
+            color: #fff;
+            box-shadow: 0 10px 40px rgba(67, 100, 247, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-2px);
+        }
+
+        /* Sections */
+        .section {
+            padding: 120px 0;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        .section.hidden {
+            display: none;
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Orbitron', monospace;
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 4rem;
+            background: linear-gradient(45deg, #fff, #00d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Category Cards */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .category-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 2.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .category-card:hover::before {
+            left: 100%;
+        }
+
+        .category-card:hover {
+            transform: translateY(-15px) scale(1.05);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .category-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, #0052d4, #00d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.5));
+        }
+
+        .category-card h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .category-card p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Quiz Interface */
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .user-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .question-counter {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0052d4, #4364f7, #6fb1fc);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(67, 100, 247, 0.6);
+        }
+
+        .question {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.6rem;
+            color: white;
+            margin-bottom: 2.5rem;
+            line-height: 1.5;
+            min-height: 80px;
+        }
+
+        .options {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .option {
+            padding: 1.5rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            font-size: 1.1rem;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateX(10px);
+        }
+
+        .option.correct {
+            background: linear-gradient(45deg, #00b09b, #96c93d);
+            border-color: #00b09b;
+            animation: correctAnswer 0.6s ease;
+        }
+
+        .option.wrong {
+            background: linear-gradient(45deg, #cb2d3e, #ef473a);
+            border-color: #cb2d3e;
+            animation: wrongAnswer 0.6s ease;
+        }
+
+        .option.selected {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: #00d2ff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
+        }
+
+        @keyframes correctAnswer {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes wrongAnswer {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(0.95);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .quiz-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .timer {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        /* Results Page */
+        .results-container {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .score-circle {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: conic-gradient(#0052d4 0deg, #00d2ff calc(var(--score-deg, 0) * 1deg), rgba(255, 255, 255, 0.1) 0deg);
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .score-inner {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: rgba(10, 25, 47, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 1rem;
+            color: #ccc;
+            font-weight: 500;
+        }
+
+        .performance {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            margin: 2rem 0;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            display: inline-block;
+        }
+
+        .performance.excellent {
+            background: linear-gradient(45deg, #0052d4, #4364f7, #6fb1fc);
+            color: #fff;
+        }
+
+        .performance.good {
+            background: linear-gradient(45deg, #4364f7, #00d2ff);
+            color: #fff;
+        }
+
+        .performance.average {
+            background: linear-gradient(45deg, #17a2b8, #20c997);
+            color: white;
+        }
+
+        .performance.poor {
+            background: linear-gradient(45deg, #ff0000, #ff4d4d);
+            color: white;
+        }
+
+        /* Leaderboard */
+        .leaderboard {
+            max-width: 600px;
+            margin: 3rem auto 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .leaderboard h3 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            color: white;
+        }
+
+        /* User Name Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(10, 25, 47, 0.95), rgba(2, 12, 27, 0.9));
+            padding: 3rem;
+            border-radius: 30px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+        }
+
+        .modal h2 {
+            margin-bottom: 2rem;
+            color: #fff;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-radius: 50px;
+            background: rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #ccc;
+        }
+
+        .auth-tab.active {
+            background: linear-gradient(45deg, #0052d4, #00d2ff);
+            color: #fff;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 1.2rem 2rem;
+            border: 2px solid rgba(0, 210, 255, 0.5);
+            border-radius: 50px;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+
+        .modal input:focus {
+            outline: none;
+            border-color: #00d2ff;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+        }
+
+        .btn-google {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            margin-top: 1rem;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-google:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-google i {
+            color: #DB4437;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .typing-subtitle {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 80px 1rem;
+            }
+
+            .section-title {
+                font-size: 2.5rem;
+            }
+
+            .categories-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .quiz-container {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .quiz-controls {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f0f0f0;
+            animation: confetti-fall 3s linear infinite;
+            z-index: 3000;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Clock */
+        .clock {
+            position: fixed;
+            top: 20px;
+            right: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            backdrop-filter: blur(20px);
+            z-index: 1001;
+        }
+
+        /* Back to Top */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(45deg, #0052d4, #00d2ff);
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Games Section */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 2.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card:hover {
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 0 25px 60px rgba(0, 210, 255, 0.15);
+            border-color: rgba(0, 210, 255, 0.4);
+        }
+
+        .game-card .game-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .game-card h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.4rem;
+            color: white;
+            margin-bottom: 0.8rem;
+        }
+
+        .game-card p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Game Modal */
+        .game-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+
+        .game-modal.active {
+            display: flex;
+        }
+
+        .game-modal-content {
+            background: linear-gradient(135deg, rgba(10, 25, 47, 0.97), rgba(2, 12, 27, 0.95));
+            padding: 2.5rem;
+            border-radius: 25px;
+            max-width: 550px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+            position: relative;
+            color: white;
+        }
+
+        .game-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            color: #ccc;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .game-close-btn:hover {
+            color: #ff4757;
+        }
+
+        /* Memory Game */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.8rem;
+            margin: 1.5rem 0;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #0052d4, #4364f7);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            user-select: none;
+        }
+
+        .memory-card:hover {
+            transform: scale(1.05);
+        }
+
+        .memory-card.flipped {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #00d2ff;
+        }
+
+        .memory-card.matched {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            border-color: #96c93d;
+            pointer-events: none;
+        }
+
+        /* Tic Tac Toe */
+        .ttt-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.6rem;
+            max-width: 280px;
+            margin: 1.5rem auto;
+        }
+
+        .ttt-cell {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Orbitron', monospace;
+            color: white;
+        }
+
+        .ttt-cell:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .ttt-cell.x {
+            color: #00d2ff;
+        }
+
+        .ttt-cell.o {
+            color: #ff6b81;
+        }
+
+        /* Math Speed */
+        .math-problem {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            text-align: center;
+            margin: 2rem 0;
+            color: #00d2ff;
+        }
+
+        .math-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .math-option {
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .math-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00d2ff;
+        }
+
+        .math-option.correct-flash {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            border-color: #96c93d;
+        }
+
+        .math-option.wrong-flash {
+            background: linear-gradient(135deg, #cb2d3e, #ef473a);
+            border-color: #cb2d3e;
+        }
+
+        /* Word Scramble */
+        .scramble-word {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.8rem;
+            font-weight: 900;
+            text-align: center;
+            margin: 2rem 0;
+            letter-spacing: 0.5rem;
+            color: #00d2ff;
+        }
+
+        .scramble-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(0, 210, 255, 0.4);
+            border-radius: 50px;
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 0.3rem;
+        }
+
+        .scramble-input:focus {
+            outline: none;
+            border-color: #00d2ff;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+        }
+
+        .game-score-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+        }
+        /* Theme Picker Section */
+        .themes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .theme-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 2px solid rgba(255,255,255,0.15);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .theme-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+        }
+
+        .theme-card.active-theme {
+            border-color: #fff;
+            box-shadow: 0 0 25px rgba(255,255,255,0.3);
+        }
+
+        .theme-card.active-theme::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 0.8rem;
+            right: 1rem;
+            font-size: 1.2rem;
+            color: #fff;
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .theme-preview {
+            width: 100%;
+            height: 80px;
+            border-radius: 12px;
+            margin-bottom: 1.2rem;
+        }
+
+        .theme-card h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            color: white;
+            margin-bottom: 0.4rem;
+        }
+
+        .theme-card p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">QUIZMASTER</div>
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Live Clock -->
+    <div class="clock" id="clock"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-brain"></i> QuizMaster Pro
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-link" onclick="showSection('home')">Home</a></li>
+                <li><a href="#" class="nav-link" onclick="showSection('categories')">Categories</a></li>
+                <li><a href="#" class="nav-link" onclick="showSection('games')">Games</a></li>
+                <li><a href="#" class="nav-link" onclick="showSection('leaderboard')">Leaderboard</a></li>
+                <li><a href="#" class="nav-link" onclick="showSection('themes')"><i class="fas fa-palette"></i> Themes</a></li>
+            </ul>
+            <button class="mode-toggle" id="modeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero fade-in">
+        <div class="hero-content">
+            <h1 class="hero-title">Ultimate Quiz Challenge</h1>
+            <div class="typing-subtitle" id="typingSubtitle"></div>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="showNameModal()">
+                    <i class="fas fa-rocket"></i> Start Quiz
+                </button>
+                <button class="btn btn-secondary" onclick="showSection('categories')">
+                    <i class="fas fa-th-large"></i> View Categories
+                </button>
+                <button class="btn btn-secondary" onclick="openMultiplayer()" style="border-color: #00d2ff;">
+                    <i class="fas fa-users"></i> Play with Friends
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories" class="section hidden fade-in">
+        <h2 class="section-title">Choose Your Challenge</h2>
+        <div class="categories-grid">
+            <div class="category-card" onclick="startQuiz('computer')">
+                <div class="category-icon">
+                    <i class="fas fa-laptop-code"></i>
+                </div>
+                <h3>Computer Languages</h3>
+                <p>Test your programming knowledge with HTML, CSS, JavaScript, Python and more!</p>
+                <button class="btn btn-primary">Start Quiz</button>
+            </div>
+            <div class="category-card" onclick="startQuiz('general')">
+                <div class="category-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <h3>General Knowledge</h3>
+                <p>Challenge yourself with geography, science, history and current affairs!</p>
+                <button class="btn btn-primary">Start Quiz</button>
+            </div>
+            <div class="category-card" onclick="startQuiz('movies')">
+                <div class="category-icon">
+                    <i class="fas fa-film"></i>
+                </div>
+                <h3>Movies & Entertainment</h3>
+                <p>Are you a true movie buff? Test your Bollywood & Hollywood knowledge!</p>
+                <button class="btn btn-primary">Start Quiz</button>
+            </div>
+            <div class="category-card" onclick="startQuiz('sports')">
+                <div class="category-icon">
+                    <i class="fas fa-futbol"></i>
+                </div>
+                <h3>Sports</h3>
+                <p>From cricket to Olympics, prove you're a sports encyclopedia!</p>
+                <button class="btn btn-primary">Start Quiz</button>
+            </div>
+            <div class="category-card" onclick="startQuiz('history')">
+                <div class="category-icon">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <h3>History</h3>
+                <p>Journey through time with ancient history, wars and great leaders!</p>
+                <button class="btn btn-primary">Start Quiz</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quiz Section -->
+    <section id="quiz" class="section hidden fade-in">
+        <div class="quiz-container">
+            <div class="quiz-header">
+                <div class="user-name" id="userNameDisplay"></div>
+                <div class="question-counter" id="questionCounter">Question 1 of 10</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            <div class="timer" id="timer">30s</div>
+            <div class="question" id="question"></div>
+            <div class="options" id="options"></div>
+            <div class="quiz-controls">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" disabled>
+                    <i class="fas fa-arrow-left"></i> Previous
+                </button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">
+                    Next <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results" class="section hidden fade-in">
+        <div class="results-container">
+            <div class="score-circle" id="scoreCircle">
+                <div class="score-inner">
+                    <div class="score-number" id="finalScore">0</div>
+                    <div class="score-label">/ 10</div>
+                </div>
+            </div>
+            <div class="performance" id="performance"></div>
+            <div style="font-size: 1.3rem; color: #fff; margin: 2rem 0;">
+                <div><strong id="correctCount">0</strong> Correct | <strong id="wrongCount">0</strong> Wrong</div>
+                <div style="margin-top: 1rem;">Score: <span id="percentage">0%</span></div>
+            </div>
+            <button class="btn btn-primary" onclick="restartQuiz()" style="font-size: 1.2rem; padding: 1.5rem 3rem;">
+                <i class="fas fa-redo"></i> Take Another Quiz
+            </button>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="leaderboard">
+            <h3><i class="fas fa-trophy"></i> Top Scores</h3>
+            <div id="leaderboardList"></div>
+        </div>
+    </section>
+
+    <!-- Leaderboard Section -->
+    <section id="leaderboard" class="section hidden">
+        <h2 class="section-title">🏆 Leaderboard</h2>
+        <div class="leaderboard">
+            <h3>Top Performers</h3>
+            <div id="globalLeaderboard"></div>
+        </div>
+    </section>
+
+    <!-- Themes Section -->
+    <section id="themes" class="section hidden fade-in">
+        <h2 class="section-title"><i class="fas fa-palette"></i> Choose Your Theme</h2>
+        <p style="text-align: center; color: #ccc; margin-bottom: 3rem; font-size: 1.1rem;">Personalize your QuizMaster experience with a theme that matches your style.</p>
+        <div class="themes-grid" id="themesGrid">
+            <div class="theme-card active-theme" onclick="applyTheme('ocean')">
+                <div class="theme-preview" style="background: linear-gradient(-45deg, #021B79, #0575E6, #20BDFF, #00d2ff);"></div>
+                <h3>🌊 Ocean Blue</h3>
+                <p>Deep sea vibes</p>
+            </div>
+            <div class="theme-card" onclick="applyTheme('sunset')">
+                <div class="theme-preview" style="background: linear-gradient(-45deg, #f12711, #f5af19, #ff6a00, #ee0979);"></div>
+                <h3>🌅 Sunset</h3>
+                <p>Warm golden glow</p>
+            </div>
+            <div class="theme-card" onclick="applyTheme('neon')">
+                <div class="theme-preview" style="background: linear-gradient(-45deg, #1A0B2E, #8A2387, #E94057, #F27121);"></div>
+                <h3>💜 Neon Purple</h3>
+                <p>Cyberpunk aesthetic</p>
+            </div>
+            <div class="theme-card" onclick="applyTheme('forest')">
+                <div class="theme-preview" style="background: linear-gradient(-45deg, #0f3443, #34e89e, #0d7377, #14b8a6);"></div>
+                <h3>🌲 Forest</h3>
+                <p>Nature's serenity</p>
+            </div>
+            <div class="theme-card" onclick="applyTheme('midnight')">
+                <div class="theme-preview" style="background: linear-gradient(-45deg, #0c0c1d, #1a1a3e, #2d2d6b, #4e4eb8);"></div>
+                <h3>🌙 Midnight</h3>
+                <p>Deep space elegance</p>
+            </div>
+            <div class="theme-card" onclick="applyTheme('rosegold')">
+                <div class="theme-preview" style="background: linear-gradient(-45deg, #b76e79, #e8b4b8, #f7cac9, #d4a5a5);"></div>
+                <h3>🌸 Rose Gold</h3>
+                <p>Elegant and chic</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Games Section -->
+    <section id="games" class="section hidden fade-in">
+        <h2 class="section-title">🎮 Mind Games</h2>
+        <div class="games-grid">
+            <div class="game-card" onclick="openGame('memory')">
+                <div class="game-icon">🧠</div>
+                <h3>Memory Match</h3>
+                <p>Flip cards and find matching pairs. Train your visual memory!</p>
+                <button class="btn btn-primary">Play Now</button>
+            </div>
+            <div class="game-card" onclick="openGame('tictactoe')">
+                <div class="game-icon">❌⭕</div>
+                <h3>Tic-Tac-Toe</h3>
+                <p>Classic strategy game. Beat the AI opponent to win!</p>
+                <button class="btn btn-primary">Play Now</button>
+            </div>
+            <div class="game-card" onclick="openGame('math')">
+                <div class="game-icon">🔢</div>
+                <h3>Math Speed</h3>
+                <p>Solve math problems as fast as you can. Race against the clock!</p>
+                <button class="btn btn-primary">Play Now</button>
+            </div>
+            <div class="game-card" onclick="openGame('scramble')">
+                <div class="game-icon">🔤</div>
+                <h3>Word Scramble</h3>
+                <p>Unscramble the jumbled letters to discover the hidden word!</p>
+                <button class="btn btn-primary">Play Now</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Game Modal -->
+    <div class="game-modal" id="gameModal">
+        <div class="game-modal-content">
+            <button class="game-close-btn" onclick="closeGame()"><i class="fas fa-times"></i></button>
+            <div id="gameArea"></div>
+        </div>
+    </div>
+
+    <!-- Multiplayer Section -->
+    <section id="multiplayer" class="section hidden fade-in">
+        <div class="quiz-container">
+            <h2 class="section-title">Multiplayer Arena</h2>
+
+            <div id="mp-menu">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <p style="font-size: 1.2rem; color: #ccc; margin-bottom: 2rem;">Create a private room to play with
+                        friends, or join an existing room with an invite code.</p>
+                    <button class="btn btn-primary" onclick="createRoom()"
+                        style="margin-bottom: 1rem; width: 100%; max-width: 300px;">
+                        <i class="fas fa-plus"></i> Create Room
+                    </button>
+                    <div style="margin: 1.5rem 0; color: #ccc;">OR</div>
+                    <div style="display: flex; gap: 1rem; justify-content: center; max-width: 400px; margin: 0 auto;">
+                        <input type="text" id="joinCode" placeholder="Enter Invite Code"
+                            style="padding: 1rem; border-radius: 50px; border: 2px solid rgba(0,210,255,0.5); background: rgba(0,0,0,0.5); color: white; width: 100%;">
+                        <button class="btn btn-secondary" onclick="joinRoom()">Join</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mp-lobby" style="display: none;">
+                <h3 style="text-align: center; margin-bottom: 1rem; color: white;">Room Code: <span id="lobbyCode"
+                        style="color: #00d2ff; font-family: 'Orbitron', monospace;"></span></h3>
+                <p style="text-align: center; color: #ccc; margin-bottom: 2rem;">Waiting for players...</p>
+
+                <div id="lobbyPlayers" style="display: grid; gap: 1rem; margin-bottom: 2rem;">
+                    <!-- Players injected here -->
+                </div>
+
+                <div style="text-align: center;">
+                    <button class="btn btn-primary" id="startMpBtn" onclick="startMultiplayerQuiz()"
+                        style="display: none; padding: 1rem 3rem;">
+                        <i class="fas fa-play"></i> Start Game
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Auth Modal -->
+    <div class="modal" id="nameModal">
+        <div class="modal-content">
+            <h2><i class="fas fa-user-astronaut"></i> Welcome</h2>
+
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="toggleAuth('login')" id="tabLogin">Login</div>
+                <div class="auth-tab" onclick="toggleAuth('register')" id="tabRegister">Register</div>
+            </div>
+
+            <!-- Login Form -->
+            <div class="auth-form active" id="formLogin">
+                <input type="text" id="loginEmail" placeholder="Email or Phone Number">
+                <input type="password" id="loginPassword" placeholder="Password">
+                <button class="btn btn-primary" style="width:100%" onclick="handleLogin()">Login 🚀</button>
+
+                <div style="margin: 1.5rem 0; color: #ccc; font-weight: 500;">OR</div>
+
+                <button class="btn btn-google" onclick="handleGoogleSignIn()">
+                    <i class="fab fa-google"></i> Sign in with Gmail
+                </button>
+            </div>
+
+            <!-- Register Form -->
+            <div class="auth-form" id="formRegister">
+                <input type="text" id="registerName" placeholder="Full Name" maxlength="20">
+                <input type="text" id="registerEmail" placeholder="Email or Phone Number">
+                <input type="password" id="registerPassword" placeholder="Create Password">
+                <button class="btn btn-primary" style="width:100%" onclick="handleRegister()">Create Account 🚀</button>
+
+                <div style="margin: 1.5rem 0; color: #ccc; font-weight: 500;">OR</div>
+
+                <button class="btn btn-google" onclick="handleGoogleSignIn()">
+                    <i class="fab fa-google"></i> Sign up with Gmail
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Back to Top -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script>
+        // Global Quiz Data - 50 Questions (10 per category)
+        const quizData = {
+            computer: [
+                {
+                    question: "What does HTML stand for?",
+                    options: ["Hyper Text Markup Language", "High Tech Modern Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Language"],
+                    correct: 0
+                },
+                {
+                    question: "Which CSS property controls the text size?",
+                    options: ["text-size", "font-style", "font-size", "text-style"],
+                    correct: 2
+                },
+                {
+                    question: "What is the correct JavaScript syntax to print 'Hello World'?",
+                    options: ["print('Hello World')", "console.log('Hello World')", "printf('Hello World')", "log('Hello World')"],
+                    correct: 1
+                },
+                {
+                    question: "Which programming language is known as the 'language of the web'?",
+                    options: ["Python", "JavaScript", "Java", "C++"],
+                    correct: 1
+                },
+                {
+                    question: "What does CSS stand for?",
+                    options: ["Computer Style Sheets", "Creative Style Sheets", "Cascading Style Sheets", "Colorful Style Sheets"],
+                    correct: 2
+                },
+                {
+                    question: "In Python, what is used to define a function?",
+                    options: ["function", "fun", "def", "define"],
+                    correct: 2
+                },
+                {
+                    question: "Which loop is used for fixed number of iterations?",
+                    options: ["while loop", "do-while loop", "for loop", "if loop"],
+                    correct: 2
+                },
+                {
+                    question: "What is the file extension for JavaScript files?",
+                    options: [".js", ".jss", ".javascript", ".jscript"],
+                    correct: 0
+                },
+                {
+                    question: "Which HTML tag is used for the largest heading?",
+                    options: ["<head>", "<h1>", "<heading>", "<h6>"],
+                    correct: 1
+                },
+                {
+                    question: "What keyword is used to declare variables in JavaScript?",
+                    options: ["var", "let", "const", "All of the above"],
+                    correct: 3
+                }
+            ],
+            general: [
+                {
+                    question: "What is the capital of France?",
+                    options: ["Berlin", "Madrid", "Paris", "Rome"],
+                    correct: 2
+                },
+                {
+                    question: "Which planet is known as the Red Planet?",
+                    options: ["Venus", "Mars", "Jupiter", "Saturn"],
+                    correct: 1
+                },
+                {
+                    question: "What is the largest ocean on Earth?",
+                    options: ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"],
+                    correct: 3
+                },
+                {
+                    question: "Who wrote 'Romeo and Juliet'?",
+                    options: ["Charles Dickens", "William Shakespeare", "Mark Twain", "Jane Austen"],
+                    correct: 1
+                },
+                {
+                    question: "What is the chemical symbol for gold?",
+                    options: ["Au", "Ag", "Fe", "Pb"],
+                    correct: 0
+                },
+                {
+                    question: "Which country hosted the 2024 Summer Olympics?",
+                    options: ["Tokyo", "Paris", "Los Angeles", "Beijing"],
+                    correct: 1
+                },
+                {
+                    question: "What is the tallest mountain in the world?",
+                    options: ["K2", "Kangchenjunga", "Mount Everest", "Makalu"],
+                    correct: 2
+                },
+                {
+                    question: "Which gas do plants absorb from the atmosphere?",
+                    options: ["Oxygen", "Nitrogen", "Carbon dioxide", "Hydrogen"],
+                    correct: 2
+                },
+                {
+                    question: "What is the currency of Japan?",
+                    options: ["Yuan", "Yen", "Won", "Ringgit"],
+                    correct: 1
+                },
+                {
+                    question: "Which continent is the Sahara Desert located?",
+                    options: ["Asia", "Africa", "Australia", "South America"],
+                    correct: 1
+                }
+            ],
+            movies: [
+                {
+                    question: "Who directed the movie 'Inception'?",
+                    options: ["Steven Spielberg", "Christopher Nolan", "Martin Scorsese", "Quentin Tarantino"],
+                    correct: 1
+                },
+                {
+                    question: "Which movie won the most Oscars in 2024?",
+                    options: ["Oppenheimer", "Barbie", "Poor Things", "Killers of the Flower Moon"],
+                    correct: 0
+                },
+                {
+                    question: "In which movie does Tom Hanks play a man who doesn't age?",
+                    options: ["Cast Away", "Forrest Gump", "The Terminal", "Forrest Gump"],
+                    correct: 1
+                },
+                {
+                    question: "What is the highest-grossing movie of all time?",
+                    options: ["Titanic", "Avatar", "Avengers: Endgame", "Star Wars: The Force Awakens"],
+                    correct: 1
+                },
+                {
+                    question: "Which actor played Iron Man in the MCU?",
+                    options: ["Chris Evans", "Robert Downey Jr.", "Chris Hemsworth", "Mark Ruffalo"],
+                    correct: 1
+                },
+                {
+                    question: "Which Bollywood movie is known as the 'Baahubali of South India'?",
+                    options: ["RRR", "KGF", "Pushpa", "Kantara"],
+                    correct: 1
+                },
+                {
+                    question: "Who directed the Harry Potter movie series?",
+                    options: ["Multiple directors", "Chris Columbus only", "David Yates only", "Alfonso Cuarón only"],
+                    correct: 0
+                },
+                {
+                    question: "Which movie features the line 'May the Force be with you'?",
+                    options: ["Star Wars", "Star Trek", "Guardians of the Galaxy", "Rogue One"],
+                    correct: 0
+                },
+                {
+                    question: "What is the name of the fictional African country in Black Panther?",
+                    options: ["Wakanda", "Zamunda", "Genovia", "Zanadu"],
+                    correct: 0
+                },
+                {
+                    question: "Which actor won the most Oscars for acting?",
+                    options: ["Tom Hanks", "Daniel Day-Lewis", "Meryl Streep", "Jack Nicholson"],
+                    correct: 1
+                }
+            ],
+            sports: [
+                {
+                    question: "Which country has won the most Cricket World Cups?",
+                    options: ["India", "Australia", "West Indies", "England"],
+                    correct: 1
+                },
+                {
+                    question: "Who is known as the 'GOAT' of football?",
+                    options: ["Cristiano Ronaldo", "Lionel Messi", "Pelé", "Diego Maradona"],
+                    correct: 1
+                },
+                {
+                    question: "In which sport would you perform a 'slam dunk'?",
+                    options: ["Volleyball", "Basketball", "Tennis", "Badminton"],
+                    correct: 1
+                },
+                {
+                    question: "Which country hosted the 2022 FIFA World Cup?",
+                    options: ["Brazil", "Qatar", "Russia", "Germany"],
+                    correct: 1
+                },
+                {
+                    question: "Who won the most Olympic gold medals in history?",
+                    options: ["Usain Bolt", "Michael Phelps", "Simone Biles", "Carl Lewis"],
+                    correct: 1
+                },
+                {
+                    question: "What is the maximum score in one frame of ten-pin bowling?",
+                    options: ["200", "250", "300", "350"],
+                    correct: 2
+                },
+                {
+                    question: "Which tennis player has won the most Grand Slam titles (men's)?",
+                    options: ["Roger Federer", "Rafael Nadal", "Novak Djokovic", "Pete Sampras"],
+                    correct: 2
+                },
+                {
+                    question: "In cricket, how many players are there in a team?",
+                    options: ["10", "11", "12", "13"],
+                    correct: 1
+                },
+                {
+                    question: "Which sport is played at Wimbledon?",
+                    options: ["Football", "Tennis", "Cricket", "Golf"],
+                    correct: 1
+                },
+                {
+                    question: "What does NBA stand for?",
+                    options: ["National Basketball Association", "North American Baseball Association", "National Boxing Association", "North Basketball Alliance"],
+                    correct: 0
+                }
+            ],
+            history: [
+                {
+                    question: "Who was the first President of India?",
+                    options: ["Jawaharlal Nehru", "Rajendra Prasad", "Sardar Patel", " Mahatma Gandhi"],
+                    correct: 1
+                },
+                {
+                    question: "In which year did World War II end?",
+                    options: ["1943", "1944", "1945", "1946"],
+                    correct: 2
+                },
+                {
+                    question: "Who built the Taj Mahal?",
+                    options: ["Akbar", "Shah Jahan", "Aurangzeb", "Jahangir"],
+                    correct: 1
+                },
+                {
+                    question: "Which civilization built the Great Pyramids?",
+                    options: ["Roman", "Greek", "Egyptian", "Mesopotamian"],
+                    correct: 2
+                },
+                {
+                    question: "In which year did India gain independence?",
+                    options: ["1945", "1946", "1947", "1948"],
+                    correct: 2
+                },
+                {
+                    question: "Who was the first man to walk on the moon?",
+                    options: ["Buzz Aldrin", "Neil Armstrong", "Yuri Gagarin", "John Glenn"],
+                    correct: 1
+                },
+                {
+                    question: "Which wall is known as the 'Great Wall'?",
+                    options: ["Roman Wall", "Chinese Wall", "Berlin Wall", "Hadrian's Wall"],
+                    correct: 1
+                },
+                {
+                    question: "Who discovered America in 1492?",
+                    options: ["Vasco da Gama", "Christopher Columbus", "Ferdinand Magellan", "Marco Polo"],
+                    correct: 1
+                },
+                {
+                    question: "In which year did the Titanic sink?",
+                    options: ["1911", "1912", "1913", "1914"],
+                    correct: 1
+                },
+                {
+                    question: "Which Indian freedom fighter is known as 'Iron Man of India'?",
+                    options: ["Bhagat Singh", "Subhas Chandra Bose", "Sardar Vallabhbhai Patel", "Lala Lajpat Rai"],
+                    correct: 2
+                }
+            ]
+        };
+
+        // Game State
+        let currentQuiz = null;
+        let currentQuestion = 0;
+        let score = 0;
+        let answers = [];
+        let timeLeft = 30;
+        let timerInterval;
+        let userName = '';
+        let leaderboard = JSON.parse(localStorage.getItem('quizLeaderboard')) || [];
+
+        // Multiplayer State
+        let isMultiplayer = false;
+        let mpPlayers = [];
+        let mpRoomCode = '';
+        const botNames = ["CyberNinja", "NeonRider", "QuantumCoder", "PixelHero", "HackerX", "BitWarrior"];
+
+        // DOM Elements
+        const sections = {
+            home: document.getElementById('home'),
+            categories: document.getElementById('categories'),
+            quiz: document.getElementById('quiz'),
+            results: document.getElementById('results'),
+            leaderboard: document.getElementById('leaderboard'),
+            multiplayer: document.getElementById('multiplayer'),
+            games: document.getElementById('games'),
+            themes: document.getElementById('themes')
+        };
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function () {
+            // Loading screen
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                }, 800);
+            }, 2500);
+
+            initClock();
+            initScrollObserver();
+            initBackToTop();
+            updateLeaderboard();
+            initTypingEffect();
+        });
+
+        // Show specific section
+        function showSection(sectionName) {
+            Object.values(sections).forEach(section => {
+                section.classList.add('hidden');
+            });
+            sections[sectionName].classList.remove('hidden');
+            sections[sectionName].scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Auth Modal
+        function showNameModal() {
+            document.getElementById('nameModal').style.display = 'flex';
+        }
+
+        function toggleAuth(type) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+
+            if (type === 'login') {
+                document.getElementById('tabLogin').classList.add('active');
+                document.getElementById('formLogin').classList.add('active');
+            } else {
+                document.getElementById('tabRegister').classList.add('active');
+                document.getElementById('formRegister').classList.add('active');
+            }
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPassword').value.trim();
+            if (!email || !pass) {
+                alert("Please enter both email/phone and password.");
+                return;
+            }
+            if (email.includes('@') && !email.toLowerCase().endsWith('@gmail.com')) {
+                alert("Invalid Gmail! Email must end with @gmail.com");
+                return;
+            }
+            // Mock authentication
+            userName = email.split('@')[0] || 'User';
+            completeAuth();
+        }
+
+        function handleRegister() {
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const pass = document.getElementById('registerPassword').value.trim();
+            if (!name || !email || !pass) {
+                alert("Please fill all fields.");
+                return;
+            }
+            if (email.includes('@') && !email.toLowerCase().endsWith('@gmail.com')) {
+                alert("Invalid Gmail! Email must end with @gmail.com");
+                return;
+            }
+            // Mock registration
+            userName = name || 'New User';
+            completeAuth();
+        }
+
+        function handleGoogleSignIn() {
+            const gmail = prompt("Enter your Gmail address:");
+            if (!gmail || !gmail.trim()) return;
+            if (!gmail.trim().toLowerCase().endsWith('@gmail.com')) {
+                alert("Invalid Gmail! Email must end with @gmail.com");
+                return;
+            }
+            userName = gmail.trim().split('@')[0];
+            completeAuth();
+        }
+
+        function completeAuth() {
+            document.getElementById('nameModal').style.display = 'none';
+            showSection('categories');
+        }
+
+        // Start Quiz
+        function startQuiz(category) {
+            currentQuiz = category;
+            currentQuestion = 0;
+            score = 0;
+            answers = new Array(10).fill(null);
+            timeLeft = 30;
+
+            document.getElementById('userNameDisplay').textContent = `Welcome, ${userName}!`;
+            loadQuestion();
+            showSection('quiz');
+            startTimer();
+
+            if (isMultiplayer) {
+                simulateBots();
+            } else {
+                const miniLb = document.getElementById('miniLeaderboard');
+                if (miniLb) miniLb.style.display = 'none';
+            }
+        }
+
+        // Load Current Question
+        function loadQuestion() {
+            const q = quizData[currentQuiz][currentQuestion];
+            document.getElementById('question').textContent = q.question;
+            document.getElementById('questionCounter').textContent = `Question ${currentQuestion + 1} of 10`;
+
+            const progress = ((currentQuestion) / 9) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((option, index) => {
+                const optionEl = document.createElement('div');
+                optionEl.className = 'option';
+                optionEl.innerHTML = `<span>${String.fromCharCode(65 + index)}.</span> ${option}`;
+                optionEl.onclick = () => selectOption(index);
+                optionsContainer.appendChild(optionEl);
+            });
+
+            // Show previous answer if exists
+            if (answers[currentQuestion] !== null) {
+                setTimeout(() => {
+                    document.querySelectorAll('.option')[answers[currentQuestion]].classList.add('selected');
+                }, 100);
+            }
+
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+        }
+
+        // Select Option
+        function selectOption(index) {
+            answers[currentQuestion] = index;
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.classList.remove('correct', 'wrong', 'selected');
+                if (i === index) opt.classList.add('selected');
+            });
+            document.getElementById('nextBtn').innerHTML = currentQuestion === 9 ? 'Finish Quiz' : 'Next Question';
+        }
+
+        // Navigation
+        function nextQuestion() {
+            if (answers[currentQuestion] === null) return;
+
+            if (currentQuestion < 9) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+
+        // Timer
+        function startTimer() {
+            timeLeft = 30;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    nextQuestion();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timer').textContent = `${timeLeft}s`;
+            document.getElementById('timer').style.color = timeLeft <= 5 ? '#ff4757' : '#fff';
+        }
+
+        let botInterval;
+        // Show Results
+        function showResults() {
+            clearInterval(timerInterval);
+            if (botInterval) clearInterval(botInterval);
+
+            const miniLb = document.getElementById('miniLeaderboard');
+            if (miniLb) miniLb.style.display = 'none';
+
+            // Calculate score & build AI explanation breakdown
+            score = 0;
+            const quiz = quizData[currentQuiz];
+            let breakdownHTML = '<div class="explanation-container" style="text-align: left; margin-top: 2rem;">';
+
+            for (let i = 0; i < 10; i++) {
+                const q = quiz[i];
+                const userAns = answers[i];
+                const isCorrect = userAns === q.correct;
+                if (isCorrect) score++;
+
+                breakdownHTML += `
+                    <div class="explanation-item" style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.2);">
+                        <h4 style="color: #00d2ff; margin-bottom: 0.5rem; font-family: 'Orbitron', monospace; font-size: 1.1rem;">Q${i + 1}: ${q.question}</h4>
+                        <div style="margin-bottom: 0.5rem; font-size: 1.1rem;">
+                            <strong>Your Answer:</strong> ${userAns !== null ? q.options[userAns] : 'No Answer'} 
+                            ${isCorrect ? '<i class="fas fa-check-circle" style="color: #96c93d; margin-left: 0.5rem;"></i>' : '<i class="fas fa-times-circle" style="color: #ef473a; margin-left: 0.5rem;"></i>'}
+                        </div>
+                        ${!isCorrect ? `<div style="margin-bottom: 0.5rem; color: #96c93d; font-size: 1.1rem;"><strong>Correct Answer:</strong> ${q.options[q.correct]}</div>` : ''}
+                        <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px; margin-top: 1rem; border-left: 4px solid #00d2ff; font-size: 0.95rem; line-height: 1.6;">
+                            <strong>🤖 AI Explanation:</strong> ${q.explanation}
+                        </div>
+                    </div>
+                `;
+            }
+            breakdownHTML += '</div>';
+
+            const percentage = Math.round((score / 10) * 100);
+
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('scoreCircle').style.setProperty('--score-deg', percentage * 3.6);
+            document.getElementById('correctCount').textContent = score;
+            document.getElementById('wrongCount').textContent = 10 - score;
+            document.getElementById('percentage').textContent = percentage + '%';
+
+            const performanceEl = document.getElementById('performance');
+            let performanceText = '';
+            let performanceClass = '';
+
+            if (percentage >= 90) {
+                performanceText = '🏆 EXCELLENT!';
+                performanceClass = 'excellent';
+            } else if (percentage >= 70) {
+                performanceText = '👍 GREAT JOB!';
+                performanceClass = 'good';
+            } else if (percentage >= 50) {
+                performanceText = '👌 GOOD EFFORT!';
+                performanceClass = 'average';
+            } else {
+                performanceText = '📚 KEEP LEARNING!';
+                performanceClass = 'poor';
+            }
+
+            performanceEl.textContent = performanceText;
+            performanceEl.className = `performance ${performanceClass}`;
+
+            // Append breakdown HTML before the restart button
+            let existingBreakdown = document.getElementById('breakdownSection');
+            if (existingBreakdown) existingBreakdown.remove();
+
+            const breakdownSection = document.createElement('div');
+            breakdownSection.id = 'breakdownSection';
+            breakdownSection.innerHTML = breakdownHTML;
+            document.querySelector('.results-container').insertBefore(breakdownSection, document.querySelector('.results-container button'));
+
+            // Multiplayer custom results ranking
+            let existingMpResults = document.getElementById('mpResultSection');
+            if (existingMpResults) existingMpResults.remove();
+
+            if (isMultiplayer) {
+                const realPlayer = mpPlayers.find(p => p.isReal);
+                if (realPlayer) realPlayer.score = score;
+
+                const sortedPlayers = [...mpPlayers].sort((a, b) => b.score - a.score);
+                let mpResultHTML = '<div style="margin: 2rem 0; padding: 2rem; background: rgba(0,0,0,0.5); border-radius: 20px; border: 1px solid #00d2ff;"><h3 style="color: white; margin-bottom: 1.5rem; font-family: \'Orbitron\', monospace;">Match Results</h3>';
+
+                sortedPlayers.forEach((p, index) => {
+                    let medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+                    mpResultHTML += `
+                        <div style="display: flex; justify-content: space-between; padding: 1rem; background: rgba(255,255,255,0.1); margin-bottom: 0.5rem; border-radius: 10px; color: white;">
+                            <span>${medal} ${p.name} ${p.isReal ? '(You)' : ''}</span>
+                            <strong>${p.score} / 10</strong>
+                        </div>
+                    `;
+                });
+                mpResultHTML += '</div>';
+
+                const mpResultSection = document.createElement('div');
+                mpResultSection.id = 'mpResultSection';
+                mpResultSection.innerHTML = mpResultHTML;
+                document.querySelector('.results-container').insertBefore(mpResultSection, document.querySelector('.results-container button'));
+
+                isMultiplayer = false; // Reset for next time
+            }
+
+            // Save to leaderboard
+            const scoreData = {
+                name: userName,
+                score: score,
+                percentage: percentage,
+                category: currentQuiz,
+                date: new Date().toLocaleDateString()
+            };
+            leaderboard.unshift(scoreData);
+            leaderboard = leaderboard.slice(0, 10); // Keep top 10
+            localStorage.setItem('quizLeaderboard', JSON.stringify(leaderboard));
+            updateLeaderboard();
+
+            // Confetti celebration
+            if (percentage >= 70) {
+                launchConfetti();
+            }
+
+            showSection('results');
+        }
+
+        // Restart Quiz
+        function restartQuiz() {
+            showSection('categories');
+        }
+
+        // Confetti Effect
+        function launchConfetti() {
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                document.body.appendChild(confetti);
+
+                setTimeout(() => confetti.remove(), 4000);
+            }
+        }
+
+        // Leaderboard
+        function updateLeaderboard() {
+            const leaderboardList = document.getElementById('leaderboardList');
+            const globalLeaderboard = document.getElementById('globalLeaderboard');
+
+            const topScores = leaderboard
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 10)
+                .map((item, index) => `
+                    <div class="leaderboard-item">
+                        <span><i class="fas fa-user"></i> ${item.name}</span>
+                        <span><strong>${item.score}/10</strong> (${item.percentage}%)</span>
+                    </div>
+                `).join('');
+
+            leaderboardList.innerHTML = topScores;
+            globalLeaderboard.innerHTML = topScores;
+        }
+
+        // Multiplayer Logic
+        function openMultiplayer() {
+            if (!userName || userName === '') {
+                showNameModal();
+                return;
+            }
+            showSection('multiplayer');
+            document.getElementById('mp-menu').style.display = 'block';
+            document.getElementById('mp-lobby').style.display = 'none';
+        }
+
+        function createRoom() {
+            mpRoomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+            setupLobby();
+        }
+
+        function joinRoom() {
+            const code = document.getElementById('joinCode').value.trim().toUpperCase();
+            if (code.length < 5) {
+                alert("Please enter a valid invite code.");
+                return;
+            }
+            mpRoomCode = code;
+            setupLobby();
+        }
+
+        function setupLobby() {
+            isMultiplayer = true;
+            document.getElementById('mp-menu').style.display = 'none';
+            document.getElementById('mp-lobby').style.display = 'block';
+            document.getElementById('lobbyCode').textContent = mpRoomCode;
+            document.getElementById('startMpBtn').style.display = 'inline-block';
+
+            // Add current user
+            mpPlayers = [{ name: userName, score: 0, isReal: true, status: "Ready" }];
+
+            // Generate 2-3 fake users
+            const numBots = Math.floor(Math.random() * 2) + 2;
+            const shuffledBots = botNames.sort(() => 0.5 - Math.random());
+            for (let i = 0; i < numBots; i++) {
+                mpPlayers.push({ name: shuffledBots[i], score: 0, isReal: false, status: "Joining..." });
+            }
+
+            updateLobbyUI();
+
+            // Simulate bots joining
+            setTimeout(() => {
+                mpPlayers.forEach(p => p.status = "Ready");
+                updateLobbyUI();
+            }, 2000);
+        }
+
+        function updateLobbyUI() {
+            const container = document.getElementById('lobbyPlayers');
+            container.innerHTML = mpPlayers.map(p => `
+                <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.2);">
+                    <span style="color: white; font-weight: bold;"><i class="fas fa-user"></i> ${p.name}</span>
+                    <span style="color: ${p.status === 'Ready' ? '#00d2ff' : '#ccc'};">${p.status}</span>
+                </div>
+            `).join('');
+        }
+
+        function startMultiplayerQuiz() {
+            // Pick a random category for multiplayer
+            const categories = Object.keys(quizData);
+            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+
+            // Reset bot scores
+            mpPlayers.forEach(p => p.score = 0);
+
+            startQuiz(randomCategory);
+
+            // Initialize mini leaderboard in quiz UI
+            let miniLb = document.getElementById('miniLeaderboard');
+            if (!miniLb) {
+                miniLb = document.createElement('div');
+                miniLb.id = 'miniLeaderboard';
+                miniLb.style.cssText = "position: fixed; right: 2rem; top: 100px; width: 200px; background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 15px; border: 1px solid rgba(0,210,255,0.5); backdrop-filter: blur(10px); color: white; z-index: 1000;";
+                document.body.appendChild(miniLb);
+            }
+            miniLb.style.display = 'block';
+            updateMiniLeaderboard();
+        }
+
+        function updateMiniLeaderboard() {
+            if (!isMultiplayer) return;
+            const miniLb = document.getElementById('miniLeaderboard');
+            if (miniLb) {
+                const sortedPlayers = [...mpPlayers].sort((a, b) => b.score - a.score);
+                miniLb.innerHTML = `
+                    <h4 style="color: #00d2ff; text-align: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 0.5rem; font-family: 'Orbitron', monospace;">Live Scores</h4>
+                    ${sortedPlayers.map(p => `
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                            <span>${p.name}</span>
+                            <strong>${p.score}</strong>
+                        </div>
+                    `).join('')}
+                `;
+            }
+        }
+
+        function simulateBots() {
+            if (!isMultiplayer) return;
+            clearInterval(botInterval);
+
+            // Bots answer after a random delay
+            botInterval = setInterval(() => {
+                mpPlayers.forEach(p => {
+                    if (!p.isReal) {
+                        // random chance to update score to simulate correct answers
+                        if (Math.random() > 0.6) {
+                            if (p.score < currentQuestion) {
+                                p.score++;
+                            }
+                        }
+                    }
+                });
+                updateMiniLeaderboard();
+            }, 3000); // Update every 3 seconds
+        }
+
+        // Utility Functions
+        function initClock() {
+            function updateClock() {
+                const now = new Date();
+                document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        function initTypingEffect() {
+            const typingTexts = [
+                "Test Your Knowledge",
+                "Challenge Accepted?",
+                "Ready to Win Big?",
+                "Quiz Master Awaits!"
+            ];
+            let textIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+
+            const typingElement = document.getElementById('typingSubtitle');
+
+            function type() {
+                const currentText = typingTexts[textIndex];
+                if (isDeleting) {
+                    typingElement.textContent = currentText.substring(0, charIndex - 1);
+                    charIndex--;
+                } else {
+                    typingElement.textContent = currentText.substring(0, charIndex + 1);
+                    charIndex++;
+                }
+
+                let typeSpeed = isDeleting ? 60 : 120;
+                if (!isDeleting && charIndex === currentText.length) {
+                    typeSpeed = 2000;
+                    isDeleting = true;
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    textIndex = (textIndex + 1) % typingTexts.length;
+                    typeSpeed = 500;
+                }
+
+                setTimeout(type, typeSpeed);
+            }
+            type();
+        }
+
+        function initScrollObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            });
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+        }
+
+        function initBackToTop() {
+            const btn = document.getElementById('backToTop');
+            window.addEventListener('scroll', () => {
+                btn.classList.toggle('show', window.scrollY > 300);
+            });
+            btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==========================================
+        // MIND GAMES ENGINE
+        // ==========================================
+        let gameTimerInterval = null;
+
+        function openGame(type) {
+            document.getElementById('gameModal').classList.add('active');
+            const area = document.getElementById('gameArea');
+            if (type === 'memory') initMemoryGame(area);
+            else if (type === 'tictactoe') initTicTacToe(area);
+            else if (type === 'math') initMathSpeed(area);
+            else if (type === 'scramble') initWordScramble(area);
+        }
+
+        function closeGame() {
+            document.getElementById('gameModal').classList.remove('active');
+            if (gameTimerInterval) clearInterval(gameTimerInterval);
+        }
+
+        // Close game modal on outside click
+        document.getElementById('gameModal').onclick = function (e) {
+            if (e.target === this) closeGame();
+        };
+
+        // ---- MEMORY MATCH ----
+        function initMemoryGame(area) {
+            const emojis = ['🚀', '🎯', '💎', '🔥', '⚡', '🌊', '🎮', '🏆'];
+            let cards = [...emojis, ...emojis];
+            cards.sort(() => Math.random() - 0.5);
+            let flipped = [], matched = 0, moves = 0, lockBoard = false;
+
+            area.innerHTML = `
+                <h2 style="text-align:center; font-family:'Orbitron',monospace; margin-bottom:0.5rem;">🧠 Memory Match</h2>
+                <div class="game-score-bar">
+                    <span>Moves: <strong id="memMoves">0</strong></span>
+                    <span>Pairs: <strong id="memPairs">0</strong> / 8</span>
+                </div>
+                <div class="memory-grid" id="memGrid"></div>
+            `;
+
+            const grid = document.getElementById('memGrid');
+            cards.forEach((emoji, i) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.dataset.emoji = emoji;
+                card.dataset.index = i;
+                card.textContent = '?';
+                card.onclick = () => flipCard(card);
+                grid.appendChild(card);
+            });
+
+            function flipCard(card) {
+                if (lockBoard || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+                card.classList.add('flipped');
+                card.textContent = card.dataset.emoji;
+                flipped.push(card);
+
+                if (flipped.length === 2) {
+                    moves++;
+                    document.getElementById('memMoves').textContent = moves;
+                    lockBoard = true;
+
+                    if (flipped[0].dataset.emoji === flipped[1].dataset.emoji) {
+                        flipped.forEach(c => c.classList.add('matched'));
+                        matched++;
+                        document.getElementById('memPairs').textContent = matched;
+                        flipped = [];
+                        lockBoard = false;
+                        if (matched === 8) {
+                            setTimeout(() => {
+                                area.innerHTML += `<div style="text-align:center; margin-top:1.5rem;">
+                                    <h3 style="color:#00d2ff; font-family:'Orbitron',monospace;">🎉 You Won!</h3>
+                                    <p style="color:#ccc; margin:1rem 0;">Completed in <strong>${moves}</strong> moves</p>
+                                    <button class="btn btn-primary" onclick="initMemoryGame(document.getElementById('gameArea'))">Play Again</button>
+                                </div>`;
+                            }, 500);
+                        }
+                    } else {
+                        setTimeout(() => {
+                            flipped.forEach(c => { c.classList.remove('flipped'); c.textContent = '?'; });
+                            flipped = [];
+                            lockBoard = false;
+                        }, 800);
+                    }
+                }
+            }
+        }
+
+        // ---- TIC-TAC-TOE vs AI ----
+        function initTicTacToe(area) {
+            let board = Array(9).fill('');
+            let currentPlayer = 'X';
+            let gameOver = false;
+
+            area.innerHTML = `
+                <h2 style="text-align:center; font-family:'Orbitron',monospace; margin-bottom:0.5rem;">❌⭕ Tic-Tac-Toe</h2>
+                <p id="tttStatus" style="text-align:center; color:#00d2ff; font-family:'Orbitron',monospace; margin-bottom:1rem;">Your turn (X)</p>
+                <div class="ttt-grid" id="tttGrid"></div>
+                <div style="text-align:center; margin-top:1rem;">
+                    <button class="btn btn-secondary" onclick="initTicTacToe(document.getElementById('gameArea'))"><i class="fas fa-redo"></i> Reset</button>
+                </div>
+            `;
+
+            const grid = document.getElementById('tttGrid');
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'ttt-cell';
+                cell.dataset.index = i;
+                cell.onclick = () => playerMove(i);
+                grid.appendChild(cell);
+            }
+
+            function playerMove(i) {
+                if (board[i] || gameOver || currentPlayer !== 'X') return;
+                makeMove(i, 'X');
+                if (!gameOver) {
+                    currentPlayer = 'O';
+                    document.getElementById('tttStatus').textContent = "AI thinking...";
+                    setTimeout(aiMove, 500);
+                }
+            }
+
+            function aiMove() {
+                // Simple AI: try to win, then block, then center, then random
+                let move = findWinMove('O') ?? findWinMove('X') ?? (board[4] === '' ? 4 : null);
+                if (move === null) {
+                    const empty = board.map((v, i) => v === '' ? i : null).filter(v => v !== null);
+                    move = empty[Math.floor(Math.random() * empty.length)];
+                }
+                makeMove(move, 'O');
+                if (!gameOver) {
+                    currentPlayer = 'X';
+                    document.getElementById('tttStatus').textContent = "Your turn (X)";
+                }
+            }
+
+            function findWinMove(player) {
+                const lines = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+                for (const [a, b, c] of lines) {
+                    const vals = [board[a], board[b], board[c]];
+                    if (vals.filter(v => v === player).length === 2 && vals.includes('')) {
+                        return [a, b, c][vals.indexOf('')];
+                    }
+                }
+                return null;
+            }
+
+            function makeMove(i, player) {
+                board[i] = player;
+                const cells = document.querySelectorAll('.ttt-cell');
+                cells[i].textContent = player;
+                cells[i].classList.add(player.toLowerCase());
+
+                const winner = checkWinner();
+                if (winner) {
+                    gameOver = true;
+                    document.getElementById('tttStatus').textContent = winner === 'X' ? "🎉 You Win!" : "😔 AI Wins!";
+                    document.getElementById('tttStatus').style.color = winner === 'X' ? '#96c93d' : '#ff6b81';
+                } else if (!board.includes('')) {
+                    gameOver = true;
+                    document.getElementById('tttStatus').textContent = "🤝 It's a Draw!";
+                    document.getElementById('tttStatus').style.color = '#ffa502';
+                }
+            }
+
+            function checkWinner() {
+                const lines = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+                for (const [a, b, c] of lines) {
+                    if (board[a] && board[a] === board[b] && board[b] === board[c]) return board[a];
+                }
+                return null;
+            }
+        }
+
+        // ---- MATH SPEED ----
+        function initMathSpeed(area) {
+            let mathScore = 0, mathRound = 0, mathTotal = 10;
+            let mathTimeLeft = 60;
+
+            area.innerHTML = `
+                <h2 style="text-align:center; font-family:'Orbitron',monospace; margin-bottom:0.5rem;">🔢 Math Speed</h2>
+                <div class="game-score-bar">
+                    <span>Score: <strong id="mathScoreDisplay">0</strong> / ${mathTotal}</span>
+                    <span>⏱ <strong id="mathTimer">60</strong>s</span>
+                </div>
+                <div class="math-problem" id="mathProblem"></div>
+                <div class="math-options" id="mathOptions"></div>
+            `;
+
+            if (gameTimerInterval) clearInterval(gameTimerInterval);
+            gameTimerInterval = setInterval(() => {
+                mathTimeLeft--;
+                document.getElementById('mathTimer').textContent = mathTimeLeft;
+                if (mathTimeLeft <= 0) {
+                    clearInterval(gameTimerInterval);
+                    showMathResult();
+                }
+            }, 1000);
+
+            generateMathProblem();
+
+            function generateMathProblem() {
+                if (mathRound >= mathTotal) { clearInterval(gameTimerInterval); showMathResult(); return; }
+
+                const ops = ['+', '-', '×'];
+                const op = ops[Math.floor(Math.random() * ops.length)];
+                let a, b, answer;
+
+                if (op === '+') { a = Math.floor(Math.random() * 50) + 10; b = Math.floor(Math.random() * 50) + 10; answer = a + b; }
+                else if (op === '-') { a = Math.floor(Math.random() * 50) + 30; b = Math.floor(Math.random() * 30) + 1; answer = a - b; }
+                else { a = Math.floor(Math.random() * 12) + 2; b = Math.floor(Math.random() * 12) + 2; answer = a * b; }
+
+                document.getElementById('mathProblem').textContent = `${a} ${op} ${b} = ?`;
+
+                let options = [answer];
+                while (options.length < 4) {
+                    let wrong = answer + (Math.floor(Math.random() * 20) - 10);
+                    if (wrong !== answer && !options.includes(wrong) && wrong >= 0) options.push(wrong);
+                }
+                options.sort(() => Math.random() - 0.5);
+
+                const optContainer = document.getElementById('mathOptions');
+                optContainer.innerHTML = '';
+                options.forEach(opt => {
+                    const btn = document.createElement('div');
+                    btn.className = 'math-option';
+                    btn.textContent = opt;
+                    btn.onclick = () => {
+                        if (opt === answer) {
+                            mathScore++;
+                            btn.classList.add('correct-flash');
+                        } else {
+                            btn.classList.add('wrong-flash');
+                            // highlight correct
+                            optContainer.querySelectorAll('.math-option').forEach(o => {
+                                if (parseInt(o.textContent) === answer) o.classList.add('correct-flash');
+                            });
+                        }
+                        document.getElementById('mathScoreDisplay').textContent = mathScore;
+                        mathRound++;
+                        setTimeout(generateMathProblem, 600);
+                    };
+                    optContainer.appendChild(btn);
+                });
+            }
+
+            function showMathResult() {
+                area.innerHTML = `
+                    <div style="text-align:center;">
+                        <h2 style="font-family:'Orbitron',monospace; color:#00d2ff; margin-bottom:1rem;">🔢 Math Speed</h2>
+                        <div style="font-size: 5rem; margin: 1rem 0;">${mathScore >= 8 ? '🏆' : mathScore >= 5 ? '👍' : '📚'}</div>
+                        <h3 style="font-family:'Orbitron',monospace; font-size:2rem; color:white;">${mathScore} / ${mathTotal}</h3>
+                        <p style="color:#ccc; margin:1rem 0;">Time remaining: ${Math.max(mathTimeLeft, 0)}s</p>
+                        <button class="btn btn-primary" onclick="initMathSpeed(document.getElementById('gameArea'))"><i class="fas fa-redo"></i> Play Again</button>
+                        <button class="btn btn-secondary" onclick="closeGame()" style="margin-left:1rem;">Exit</button>
+                    </div>
+                `;
+            }
+        }
+
+        // ---- WORD SCRAMBLE ----
+        function initWordScramble(area) {
+            const words = [
+                { word: 'JAVASCRIPT', hint: 'Programming language of the web' },
+                { word: 'PYTHON', hint: 'Named after a snake' },
+                { word: 'ALGORITHM', hint: 'Step-by-step problem solving' },
+                { word: 'DATABASE', hint: 'Stores structured information' },
+                { word: 'BROWSER', hint: 'You use this to visit websites' },
+                { word: 'KEYBOARD', hint: 'You type on this' },
+                { word: 'NETWORK', hint: 'Connected computers' },
+                { word: 'QUANTUM', hint: 'Physics of the very small' },
+                { word: 'GALAXY', hint: 'Collection of stars' },
+                { word: 'OCEAN', hint: 'Vast body of salt water' }
+            ];
+
+            let scrambleScore = 0, scrambleRound = 0, scrambleTotal = 5;
+            let currentWord = null;
+            let usedWords = [];
+
+            area.innerHTML = `
+                <h2 style="text-align:center; font-family:'Orbitron',monospace; margin-bottom:0.5rem;">🔤 Word Scramble</h2>
+                <div class="game-score-bar">
+                    <span>Score: <strong id="scrScore">0</strong> / ${scrambleTotal}</span>
+                    <span>Round: <strong id="scrRound">1</strong> / ${scrambleTotal}</span>
+                </div>
+                <div class="scramble-word" id="scrWord"></div>
+                <p id="scrHint" style="text-align:center; color:#ccc; margin-bottom:1.5rem;"></p>
+                <input type="text" class="scramble-input" id="scrInput" placeholder="Type your answer..." autocomplete="off">
+                <div style="text-align:center; margin-top:1.5rem; display:flex; gap:1rem; justify-content:center;">
+                    <button class="btn btn-primary" id="scrSubmit" onclick="checkScrambleAnswer()">Submit</button>
+                    <button class="btn btn-secondary" onclick="skipScrambleWord()">Skip</button>
+                </div>
+                <p id="scrFeedback" style="text-align:center; margin-top:1rem; font-weight:bold; min-height:1.5rem;"></p>
+            `;
+
+            document.getElementById('scrInput').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') checkScrambleAnswer();
+            });
+
+            loadScrambleWord();
+
+            function scramble(word) {
+                let arr = word.split('');
+                for (let i = arr.length - 1; i > 0; i--) {
+                    let j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                // Make sure it's actually scrambled
+                if (arr.join('') === word) { [arr[0], arr[arr.length - 1]] = [arr[arr.length - 1], arr[0]]; }
+                return arr.join('');
+            }
+
+            function loadScrambleWord() {
+                let available = words.filter(w => !usedWords.includes(w.word));
+                if (available.length === 0 || scrambleRound >= scrambleTotal) { showScrambleResult(); return; }
+
+                currentWord = available[Math.floor(Math.random() * available.length)];
+                usedWords.push(currentWord.word);
+                document.getElementById('scrWord').textContent = scramble(currentWord.word);
+                document.getElementById('scrHint').textContent = '💡 Hint: ' + currentWord.hint;
+                document.getElementById('scrInput').value = '';
+                document.getElementById('scrFeedback').textContent = '';
+                document.getElementById('scrInput').focus();
+            }
+
+            window.checkScrambleAnswer = function () {
+                const input = document.getElementById('scrInput').value.trim().toUpperCase();
+                const fb = document.getElementById('scrFeedback');
+                if (!input) { fb.textContent = 'Please type an answer!'; fb.style.color = '#ffa502'; return; }
+
+                if (input === currentWord.word) {
+                    scrambleScore++;
+                    fb.textContent = '✅ Correct!';
+                    fb.style.color = '#96c93d';
+                } else {
+                    fb.textContent = `❌ Wrong! It was: ${currentWord.word}`;
+                    fb.style.color = '#ff6b81';
+                }
+
+                document.getElementById('scrScore').textContent = scrambleScore;
+                scrambleRound++;
+                document.getElementById('scrRound').textContent = Math.min(scrambleRound + 1, scrambleTotal);
+
+                setTimeout(loadScrambleWord, 1200);
+            };
+
+            window.skipScrambleWord = function () {
+                document.getElementById('scrFeedback').textContent = `Skipped! It was: ${currentWord.word}`;
+                document.getElementById('scrFeedback').style.color = '#ffa502';
+                scrambleRound++;
+                document.getElementById('scrRound').textContent = Math.min(scrambleRound + 1, scrambleTotal);
+                setTimeout(loadScrambleWord, 1200);
+            };
+
+            function showScrambleResult() {
+                area.innerHTML = `
+                    <div style="text-align:center;">
+                        <h2 style="font-family:'Orbitron',monospace; color:#00d2ff; margin-bottom:1rem;">🔤 Word Scramble</h2>
+                        <div style="font-size: 5rem; margin: 1rem 0;">${scrambleScore >= 4 ? '🏆' : scrambleScore >= 2 ? '👍' : '📚'}</div>
+                        <h3 style="font-family:'Orbitron',monospace; font-size:2rem; color:white;">${scrambleScore} / ${scrambleTotal}</h3>
+                        <p style="color:#ccc; margin:1rem 0;">Words unscrambled correctly</p>
+                        <button class="btn btn-primary" onclick="initWordScramble(document.getElementById('gameArea'))"><i class="fas fa-redo"></i> Play Again</button>
+                        <button class="btn btn-secondary" onclick="closeGame()" style="margin-left:1rem;">Exit</button>
+                    </div>
+                `;
+            }
+        }
+
+        // ==========================================
+        // THEME ENGINE
+        // ==========================================
+        const themePresets = {
+            ocean: {
+                bg: 'linear-gradient(-45deg, #021B79, #0575E6, #20BDFF, #00d2ff)',
+                darkBg: 'linear-gradient(-45deg, #000428, #004e92, #000428, #0f2027)',
+                accent1: '#0052d4', accent2: '#00d2ff', accent3: '#4364f7',
+                btnGrad: 'linear-gradient(45deg, #0052d4, #4364f7, #6fb1fc)',
+                btnShadow: 'rgba(67, 100, 247, 0.4)',
+                titleGrad: 'linear-gradient(45deg, #fff, #00d2ff)',
+                heroGrad: 'linear-gradient(45deg, #fff, #00d2ff, #0575E6)',
+                loadBg: 'linear-gradient(-45deg, #021B79, #20BDFF)',
+                progressGrad: 'linear-gradient(90deg, #0052d4, #4364f7, #6fb1fc)',
+                scoreGrad: '#0052d4',
+                scoreGrad2: '#00d2ff'
+            },
+            sunset: {
+                bg: 'linear-gradient(-45deg, #f12711, #f5af19, #ff6a00, #ee0979)',
+                darkBg: 'linear-gradient(-45deg, #2d0a0a, #4a1a00, #2d0a0a, #1a0a15)',
+                accent1: '#f12711', accent2: '#f5af19', accent3: '#ff6a00',
+                btnGrad: 'linear-gradient(45deg, #f12711, #f5af19, #ff6a00)',
+                btnShadow: 'rgba(241, 39, 17, 0.4)',
+                titleGrad: 'linear-gradient(45deg, #fff, #f5af19)',
+                heroGrad: 'linear-gradient(45deg, #fff, #f5af19, #f12711)',
+                loadBg: 'linear-gradient(-45deg, #f12711, #f5af19)',
+                progressGrad: 'linear-gradient(90deg, #f12711, #f5af19, #ff6a00)',
+                scoreGrad: '#f12711',
+                scoreGrad2: '#f5af19'
+            },
+            neon: {
+                bg: 'linear-gradient(-45deg, #1A0B2E, #8A2387, #E94057, #F27121)',
+                darkBg: 'linear-gradient(-45deg, #0f0518, #1a0b2e, #0f0518, #3b1129)',
+                accent1: '#8A2387', accent2: '#F27121', accent3: '#E94057',
+                btnGrad: 'linear-gradient(45deg, #8A2387, #E94057, #F27121)',
+                btnShadow: 'rgba(233, 64, 87, 0.4)',
+                titleGrad: 'linear-gradient(45deg, #fff, #F27121)',
+                heroGrad: 'linear-gradient(45deg, #fff, #F27121, #E94057)',
+                loadBg: 'linear-gradient(-45deg, #1A0B2E, #E94057)',
+                progressGrad: 'linear-gradient(90deg, #8A2387, #E94057, #F27121)',
+                scoreGrad: '#8A2387',
+                scoreGrad2: '#F27121'
+            },
+            forest: {
+                bg: 'linear-gradient(-45deg, #0f3443, #34e89e, #0d7377, #14b8a6)',
+                darkBg: 'linear-gradient(-45deg, #071a22, #0a3d2a, #071a22, #0d3d3d)',
+                accent1: '#0d7377', accent2: '#34e89e', accent3: '#14b8a6',
+                btnGrad: 'linear-gradient(45deg, #0d7377, #34e89e, #14b8a6)',
+                btnShadow: 'rgba(52, 232, 158, 0.4)',
+                titleGrad: 'linear-gradient(45deg, #fff, #34e89e)',
+                heroGrad: 'linear-gradient(45deg, #fff, #34e89e, #0d7377)',
+                loadBg: 'linear-gradient(-45deg, #0f3443, #34e89e)',
+                progressGrad: 'linear-gradient(90deg, #0d7377, #34e89e, #14b8a6)',
+                scoreGrad: '#0d7377',
+                scoreGrad2: '#34e89e'
+            },
+            midnight: {
+                bg: 'linear-gradient(-45deg, #0c0c1d, #1a1a3e, #2d2d6b, #4e4eb8)',
+                darkBg: 'linear-gradient(-45deg, #05050e, #0d0d1f, #05050e, #1a1a3e)',
+                accent1: '#2d2d6b', accent2: '#7b7bff', accent3: '#4e4eb8',
+                btnGrad: 'linear-gradient(45deg, #2d2d6b, #4e4eb8, #7b7bff)',
+                btnShadow: 'rgba(78, 78, 184, 0.4)',
+                titleGrad: 'linear-gradient(45deg, #fff, #7b7bff)',
+                heroGrad: 'linear-gradient(45deg, #fff, #7b7bff, #4e4eb8)',
+                loadBg: 'linear-gradient(-45deg, #0c0c1d, #4e4eb8)',
+                progressGrad: 'linear-gradient(90deg, #2d2d6b, #4e4eb8, #7b7bff)',
+                scoreGrad: '#2d2d6b',
+                scoreGrad2: '#7b7bff'
+            },
+            rosegold: {
+                bg: 'linear-gradient(-45deg, #b76e79, #e8b4b8, #f7cac9, #d4a5a5)',
+                darkBg: 'linear-gradient(-45deg, #3d2327, #5c3a3f, #3d2327, #4a2d32)',
+                accent1: '#b76e79', accent2: '#f7cac9', accent3: '#e8b4b8',
+                btnGrad: 'linear-gradient(45deg, #b76e79, #e8b4b8, #f7cac9)',
+                btnShadow: 'rgba(183, 110, 121, 0.4)',
+                titleGrad: 'linear-gradient(45deg, #fff, #f7cac9)',
+                heroGrad: 'linear-gradient(45deg, #fff, #f7cac9, #b76e79)',
+                loadBg: 'linear-gradient(-45deg, #b76e79, #f7cac9)',
+                progressGrad: 'linear-gradient(90deg, #b76e79, #e8b4b8, #f7cac9)',
+                scoreGrad: '#b76e79',
+                scoreGrad2: '#f7cac9'
+            }
+        };
+
+        let currentTheme = localStorage.getItem('quizTheme') || 'ocean';
+
+        function applyTheme(themeName) {
+            const t = themePresets[themeName];
+            if (!t) return;
+            currentTheme = themeName;
+            localStorage.setItem('quizTheme', themeName);
+
+            // Body background
+            document.body.style.background = t.bg;
+            document.body.style.backgroundSize = '400% 400%';
+            document.body.style.animation = 'gradientShift 15s ease infinite';
+
+            // CSS custom properties approach — inject a style override
+            let themeStyle = document.getElementById('dynamicTheme');
+            if (!themeStyle) {
+                themeStyle = document.createElement('style');
+                themeStyle.id = 'dynamicTheme';
+                document.head.appendChild(themeStyle);
+            }
+
+            themeStyle.textContent = `
+                body { background: ${t.bg} !important; background-size: 400% 400% !important; animation: gradientShift 15s ease infinite !important; }
+                body.dark-mode { background: ${t.darkBg} !important; }
+                .loading-screen { background: ${t.loadBg} !important; }
+                .btn-primary { background: ${t.btnGrad} !important; box-shadow: 0 10px 40px ${t.btnShadow} !important; }
+                .hero-title { background: ${t.heroGrad} !important; -webkit-background-clip: text !important; background-clip: text !important; }
+                .section-title { background: ${t.titleGrad} !important; -webkit-background-clip: text !important; background-clip: text !important; }
+                .nav-link::after { background: linear-gradient(45deg, #fff, ${t.accent2}) !important; }
+                .category-icon { background: linear-gradient(45deg, ${t.accent1}, ${t.accent2}) !important; -webkit-background-clip: text !important; background-clip: text !important; filter: drop-shadow(0 0 20px ${t.btnShadow}) !important; }
+                .progress-fill { background: ${t.progressGrad} !important; box-shadow: 0 0 20px ${t.btnShadow} !important; }
+                .option.selected { border-color: ${t.accent2} !important; box-shadow: 0 0 15px ${t.btnShadow} !important; }
+                .score-circle { background: conic-gradient(${t.scoreGrad} 0deg, ${t.scoreGrad2} calc(var(--score-deg, 0) * 1deg), rgba(255,255,255,0.1) 0deg) !important; }
+                .performance.excellent { background: ${t.btnGrad} !important; }
+                .performance.good { background: linear-gradient(45deg, ${t.accent3}, ${t.accent2}) !important; }
+                .auth-tab.active { background: linear-gradient(45deg, ${t.accent1}, ${t.accent2}) !important; }
+                .modal input:focus { border-color: ${t.accent2} !important; box-shadow: 0 0 20px ${t.btnShadow} !important; }
+                .back-to-top { background: linear-gradient(45deg, ${t.accent1}, ${t.accent2}) !important; }
+                .game-card:hover { box-shadow: 0 25px 60px ${t.btnShadow} !important; border-color: ${t.accent2}66 !important; }
+                .memory-card { background: linear-gradient(135deg, ${t.accent1}, ${t.accent3}) !important; }
+                .memory-card.flipped { background: rgba(255,255,255,0.15) !important; border-color: ${t.accent2} !important; }
+                .ttt-cell.x { color: ${t.accent2} !important; }
+                .math-problem { color: ${t.accent2} !important; }
+                .math-option:hover { border-color: ${t.accent2} !important; }
+                .scramble-word { color: ${t.accent2} !important; }
+                .scramble-input:focus { border-color: ${t.accent2} !important; box-shadow: 0 0 20px ${t.btnShadow} !important; }
+                .theme-card.active-theme { border-color: ${t.accent2} !important; box-shadow: 0 0 25px ${t.btnShadow} !important; }
+            `;
+
+            // Update active card
+            document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active-theme'));
+            const cards = document.querySelectorAll('.theme-card');
+            const themeNames = ['ocean', 'sunset', 'neon', 'forest', 'midnight', 'rosegold'];
+            const idx = themeNames.indexOf(themeName);
+            if (idx >= 0 && cards[idx]) cards[idx].classList.add('active-theme');
+        }
+
+        // Apply saved theme on load
+        if (currentTheme !== 'ocean') {
+            applyTheme(currentTheme);
+        }
+
+        // Dark/Light Mode
+        document.getElementById('modeToggle').onclick = function () {
+            document.body.classList.toggle('dark-mode');
+            const icon = this.querySelector('i');
+            icon.className = document.body.classList.contains('dark-mode') ?
+                'fas fa-sun' : 'fas fa-moon';
+        };
+
+        // Enter key for name modal
+        document.getElementById('userName').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') startQuizWithName();
+        });
+
+        // Close modal on outside click
+        document.getElementById('nameModal').onclick = function (e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+                showSection('home');
+            }
+        };
+    </script>
+</body>
+
+</html>
